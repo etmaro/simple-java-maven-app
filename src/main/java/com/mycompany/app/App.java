@@ -1,8 +1,18 @@
 package com.mycompany.app;
 
-/**
- * Hello world!
- */
+
+class MyHandler implements HttpHandler {
+   public void handle(HttpExchange t) throws IOException {
+       InputStream is = t.getRequestBody();
+       read(is); // .. read the request body
+       String response = "Hello World!";
+       t.sendResponseHeaders(200, response.length());
+       OutputStream os = t.getResponseBody();
+       os.write(response.getBytes()); os.close();
+   }
+}
+
+
 public class App
 {
 
@@ -11,7 +21,10 @@ public class App
     public App() {}
 
     public static void main(String[] args) {
-        System.out.println(new App().getMessage());
+        HttpServer server = HttpServer.create(new InetSocketAddress(8000));
+        server.createContext("/applications/myapp", new MyHandler());
+        server.setExecutor(null); // creates a default executor
+        server.start();
     }
 
     private final String getMessage() {
