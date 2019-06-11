@@ -1,27 +1,32 @@
 package com.mycompany.app;
 
+import com.sun.net.httpserver.HttpServer;
 
-class MyHandler implements HttpHandler {
-   public void handle(HttpExchange t) throws IOException {
-       InputStream is = t.getRequestBody();
-       read(is); // .. read the request body
-       String response = "Hello World!";
-       t.sendResponseHeaders(200, response.length());
-       OutputStream os = t.getResponseBody();
-       os.write(response.getBytes()); os.close();
-   }
-}
+import java.io.IOException;
+import java.net.InetSocketAddress;
 
-
-public class App
-{
+/**
+ * Hello world!
+ */
+public class App {
 
     private final String message = "Hello World!";
 
-    public App() {}
+    public App() {
+    }
 
     public static void main(String[] args) {
-        HttpServer server = HttpServer.create(new InetSocketAddress(8000));
+        System.out.println(new App().getMessage());
+
+        HttpServer server = null;
+
+        {
+            try {
+                server = HttpServer.create(new InetSocketAddress(800), 8000);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         server.createContext("/applications/myapp", new MyHandler());
         server.setExecutor(null); // creates a default executor
         server.start();
@@ -30,5 +35,4 @@ public class App
     private final String getMessage() {
         return message;
     }
-
 }
